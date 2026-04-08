@@ -1,0 +1,12 @@
+﻿文件名,模块,用途,行数,关键字段
+01_headcount_summary.csv,首页/总览人力,总览 KPI、人力结构、编制使用率、离职仪表、数据截止时间,13,key|value
+02_recruit_summary.csv,招聘进展,招聘 KPI、专项招聘看板、人才质量分析,38,key|value
+03_anomaly.csv,首页异常预警,异常预警表,6,type|count|pct|note
+04_product_recruit.csv,业务群及产线,产线对比图、明细表、P4专项统计,21,group|line|approved|done|paused|p4|p4done
+05_offer_list.csv,招聘进展/数据管理,录用清单表、来源分析、序列结构、趋势图、出海人员回填,135,name|pos|line|series|type|edu|schoolType|src|level|abClass|month|onboard|status|overseas|talentType
+06_demand_list.csv,招聘进展/数据管理,招聘需求表、需求筛选、补岗追踪,100,no|time|dept|dept2|pos|line|qty|series|type|level|location|status|hired|remaining|recruiter|overseas|abClass|reason
+07_class_distribution.csv,首页人力结构,职类编制结构图、头部结构洞察,5,name|waibao|zhengbian|total
+08_series_distribution.csv,首页核心序列分布,序列人数 TOP 图、Top5 数据条,35,category|name|waibao|zhengbian|total
+09_product_headcount.csv,业务群及产线趋势,产线人力节点趋势图,35,group|line|m1_zb|m1_wb|m2_zb|m2_wb|m3_zb|m3_wb
+10_product_attrition.csv,业务群及产线风险,离职率风险图、离职预警摘要,34,line|annual_rate|active_rate|passive_rate|headcount|leave_total|active_count|passive_count|probation_rate|one_year_rate|high_perf_rate|high_level_rate
+11_product_movement.csv,业务群及产线异动,一季度异动趋势图、产线流入流出分析,33,group|line|m1_in|m1_join|m1_in_bg|m1_out|m1_active|m1_passive|m1_out_bg|m2_in|m2_join|m2_in_bg|m2_out|m2_active|m2_passive|m2_out_bg|m3_in|m3_join|m3_in_bg|m3_out|m3_active|m3_passive|m3_out_bg

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>登录问题诊断工具</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; max-width: 900px; margin: 0 auto; }
+    .test-result { padding: 12px; margin: 8px 0; border-radius: 4px; }
+    .pass { background: #d4edda; color: #155724; }
+    .fail { background: #f8d7da; color: #721c24; }
+    .warn { background: #fff3cd; color: #856404; }
+    .info { background: #d1ecf1; color: #0c5460; }
+    button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 10px 5px; }
+    button:hover { background: #0056b3; }
+    #console { background: #f8f9fa; padding: 15px; border-radius: 4px; font-family: monospace; font-size: 13px; max-height: 400px; overflow-y: auto; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>🔍 登录问题诊断工具</h1>
+  <p>这个工具会帮你检查登录功能的问题。</p>
+  
+  <button onclick="runAllTests()">运行所有检查</button>
+  <button onclick="clearConsole()">清空日志</button>
+  <button onclick="testActualLogin()">测试真实登录</button>
+  
+  <div id="console"></div>
+
+  <script>
+    const consoleEl = document.getElementById('console');
+    
+    function log(message, type = 'info') {
+      const div = document.createElement('div');
+      div.className = `test-result ${type}`;
+      div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      consoleEl.appendChild(div);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+    
+    function clearConsole() {
+      consoleEl.innerHTML = '';
+    }
+    
+    function checkElement(id, description) {
+      const el = document.getElementById(id);
+      if (el) {
+        log(`✅ 元素存在: ${description} (#${id})`, 'pass');
+        return true;
+      } else {
+        log(`❌ 元素缺失: ${description} (#${id})`, 'fail');
+        return false;
+      }
+    }
+    
+    function checkFunction(name, description) {
+      if (typeof window[name] === 'function') {
+        log(`✅ 函数存在: ${description} (${name})`, 'pass');
+        return true;
+      } else {
+        log(`❌ 函数缺失: ${description} (${name})`, 'fail');
+        return false;
+      }
+    }
+    
+    function runAllTests() {
+      clearConsole();
+      log('=== 开始登录功能诊断 ===', 'info');
+      
+      // 1. 检查核心元素
+      log('--- 检查核心元素 ---', 'info');
+      const elements = [
+        ['login-page', '登录页面容器'],
+        ['login-box', '登录框'],
+        ['login-username', '账号输入框'],
+        ['login-password', '密码输入框'],
+        ['login-role', '角色选择框'],
+        ['main-app', '主应用容器'],
+        ['login-btn', '登录按钮'],
+        ['user-avatar', '用户头像显示'],
+        ['user-name', '用户名显示'],
+        ['user-role-badge', '角色徽章'],
+      ];
+      
+      let allElementsOK = true;
+      elements.forEach(([id, desc]) => {
+        if (!checkElement(id, desc)) allElementsOK = false;
+      });
+      
+      // 2. 检查关键函数
+      log('--- 检查关键函数 ---', 'info');
+      const functions = [
+        ['doLogin', '登录函数'],
+        ['doLogout', '登出函数'],
+        ['validateLoginState', '登录状态验证'],
+        ['validateLoginForm', '表单验证'],
+        ['rebuildLoginForm', '重建登录表单'],
+        ['rebuildLoginPage', '重建登录页面'],
+      ];
+      
+      let allFunctionsOK = true;
+      functions.forEach(([name, desc]) => {
+        if (!checkFunction(name, desc)) allFunctionsOK = false;
+      });
+      
+      // 3. 检查表单值
+      log('--- 检查表单默认值 ---', 'info');
+      const unameEl = document.getElementById('login-username');
+      const pwdEl = document.getElementById('login-password');
+      
+      if (unameEl && unameEl.value) {
+        log(`✅ 账号输入框有默认值: "${unameEl.value}"`, 'pass');
+      } else {
+        log(`⚠️  账号输入框无默认值`, 'warn');
+      }
+      
+      if (pwdEl && pwdEl.value) {
+        log(`✅ 密码输入框有默认值`, 'pass');
+      } else {
+        log(`⚠️  密码输入框无默认值`, 'warn');
+      }
+      
+      // 4. 检查 ROLE_CONFIG
+      log('--- 检查角色配置 ---', 'info');
+      if (typeof ROLE_CONFIG !== 'undefined') {
+        log(`✅ ROLE_CONFIG 已定义`, 'pass');
+        const roles = Object.keys(ROLE_CONFIG);
+        log(`  可用角色: ${roles.join(', ')}`, 'info');
+      } else {
+        log(`❌ ROLE_CONFIG 未定义`, 'fail');
+      }
+      
+      // 5. 总结
+      log('=== 诊断完成 ===', 'info');
+      if (allElementsOK && allFunctionsOK) {
+        log('✅ 登录功能代码完整性检查通过！', 'pass');
+        log('如果仍无法登录，请尝试以下操作：', 'info');
+        log('1. 清除浏览器缓存（Ctrl+Shift+Delete）', 'info');
+        log('2. 强制刷新页面（Ctrl+F5）', 'info');
+        log('3. 检查浏览器控制台是否有红色错误', 'info');
+      } else {
+        log('❌ 发现问题，请查看上面的错误信息', 'fail');
+      }
+    }
+    
+    function testActualLogin() {
+      clearConsole();
+      log('=== 测试真实登录流程 ===', 'info');
+      
+      try {
+        // 模拟点击登录按钮
+        const loginBtn = document.getElementById('login-btn') || document.querySelector('button[onclick*="doLogin"]');
+        if (loginBtn) {
+          log('找到登录按钮，尝试点击...', 'info');
+          loginBtn.click();
+          log('✅ 登录按钮已触发', 'pass');
+        } else {
+          log('⚠️  未找到登录按钮，将直接调用 doLogin()...', 'warn');
+          if (typeof doLogin === 'function') {
+            doLogin();
+            log('✅ doLogin() 已调用', 'pass');
+          } else {
+            log('❌ doLogin 函数不存在', 'fail');
+          }
+        }
+        
+        // 检查页面是否切换
+        setTimeout(() => {
+          const loginPage = document.getElementById('login-page');
+          const mainApp = document.getElementById('main-app');
+          
+          if (loginPage && loginPage.style.display === 'none') {
+            log('✅ 登录页已隐藏', 'pass');
+          } else {
+            log('❌ 登录页未隐藏', 'fail');
+          }
+          
+          if (mainApp && mainApp.style.display === 'block') {
+            log('✅ 主应用已显示', 'pass');
+          } else {
+            log('❌ 主应用未显示', 'fail');
+          }
+        }, 500);
+        
+      } catch (e) {
+        log(`❌ 测试出错: ${e.message}`, 'fail');
+        console.error(e);
+      }
+    }
+    
+    // 页面加载完成后自动运行检查
+    window.addEventListener('load', () => {
+      setTimeout(runAllTests, 1000);
+    });
+  </script>
+  
+  <iframe src="hr_dashboard.html" style="width:100%; height:600px; border:1px solid #ddd; margin-top:30px;" onload="log('仪表盘页面已加载到 iframe 中', 'info')"></iframe>
+</body>
+</html>
