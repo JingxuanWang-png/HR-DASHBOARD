@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -929,7 +929,6 @@ body {
       <div id="login-role-tip" style="font-size:12px;color:var(--text-muted);margin-top:-6px">当前为阅读模式，可直接进入；需要改数时再验证编辑密码</div>
       <button class="login-btn" id="login-submit-btn" onclick="doLogin()">进 入 阅 读 模 式</button>
     </div>
-    <div class="login-hint">演示账号：admin &nbsp;|&nbsp; 编辑密码：123456 &nbsp;|&nbsp; 阅读可直接进入</div>
   </div>
 </div>
 
@@ -950,7 +949,7 @@ body {
       <div class="nav-tab" id="manage-tab" style="display:none" onclick="switchPage('manage',this)">数据管理</div>
     </div>
     <div class="header-right">
-      <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="切换主题">🌙</button>
+      <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="切换主题">☀️</button>
       <button class="header-export-btn" id="csv-import-btn" onclick="triggerCSVBatchImport()" title="导入总表 / CSV / Excel 并自动刷新">📤 导入总表/Excel</button>
       <button class="header-export-btn" id="page-export-btn" onclick="exportCurrentPageCSV()" title="导出总览与人力 CSV">📥 导出总览CSV</button>
       <div class="time-display" id="time-display">--:--:--</div>
@@ -1570,7 +1569,7 @@ DB.productMovement = HR_EXTRA_DIMENSIONS.productMovement;
 // ============================================================
 const THEMES = ['dark', 'light', 'blue'];
 const THEME_ICONS = { dark:'🌙', light:'☀️', blue:'🔵' };
-let currentThemeIdx = 0; // 默认 dark
+let currentThemeIdx = 1; // 默认 light（日间模式）
 
 function toggleTheme() {
   currentThemeIdx = (currentThemeIdx + 1) % THEMES.length;
