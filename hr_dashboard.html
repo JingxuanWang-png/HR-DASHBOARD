@@ -3042,7 +3042,7 @@ function renderHeadcountCards() {
   const rateWbSub = document.getElementById('sc-rate-wb')?.nextElementSibling;
   const leftWbSub = document.getElementById('sc-left-wb')?.nextElementSibling;
   if (rateZbSub) rateZbSub.textContent = `${formatCount(zhengbian)} / ${formatCount(budgetZb)}`;
-  if (leftZbSub) leftZbSub.textContent = zbLeft >= 0 ? '剩余编制' : `超编${formatCount(Math.abs(zbLeft))}人`;
+  if (leftZbSub) leftZbSub.textContent = zbLeft >= 0 ? '剩余编' : `超编${formatCount(Math.abs(zbLeft))}人`;
   if (rateWbSub) rateWbSub.textContent = `${formatCount(waibao)} / ${formatCount(budgetWb)}`;
   if (leftWbSub) leftWbSub.textContent = wbLeft >= 0 ? '剩余编制' : `超编${formatCount(Math.abs(wbLeft))}人`;
 
