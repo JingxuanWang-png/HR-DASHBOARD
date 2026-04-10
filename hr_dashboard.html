@@ -1109,23 +1109,34 @@ body {
         </div>
         <div class="card">
           <div class="card-title"><span class="title-icon">📉 离职率指标</span></div>
-          <div id="gauge-complete" style="height:180px"></div>
-          <div style="display:flex;gap:16px;margin-top:8px;flex-wrap:wrap">
-            <div style="font-size:12px;color:var(--text-muted)">主动：<span style="color:#ff4757;font-weight:700" id="gauge-active-rate">1.7%</span></div>
-            <div style="font-size:12px;color:var(--text-muted)">被动：<span style="color:#ffd700;font-weight:700" id="gauge-passive-rate">1.3%</span></div>
-            <div style="font-size:12px;color:var(--text-muted)">综合：<span style="color:#a55eea;font-weight:700" id="gauge-total-rate">3.0%</span></div>
-          </div>
-          <div style="margin-top:10px;padding:8px 10px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border);font-size:11px;line-height:1.6;color:var(--text-muted)">
-            <div style="font-weight:600;color:var(--text);margin-bottom:4px">📊 同期对比</div>
-            <div style="display:flex;gap:12px;flex-wrap:wrap">
-              <span>BG去年同期：<span style="color:var(--text)">2.5%</span></span>
-              <span>去年主动：<span style="color:var(--accent-red)">1.3%</span></span>
-              <span>去年被动：<span style="color:#ffd700">1.3%</span></span>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <!-- 左侧：仪表图 -->
+            <div style="flex:1.2;min-width:140px">
+              <div id="gauge-complete" style="height:140px"></div>
             </div>
-            <div style="margin-top:4px;display:flex;gap:12px;flex-wrap:wrap">
-              <span>集团今年：<span style="color:var(--text)">3.2%</span></span>
-              <span>集团主动：<span style="color:var(--accent-red)">1.6%</span></span>
-              <span>集团被动：<span style="color:#ffd700">1.6%</span></span>
+            <!-- 右侧：指标+对比 -->
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:120px;padding-top:8px">
+              <!-- 本期指标 -->
+              <div style="padding:8px 10px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border)">
+                <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;font-weight:600">本期指标</div>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <div style="font-size:12px;color:var(--text-muted)">主动：<span style="color:#ff4757;font-weight:700" id="gauge-active-rate">1.7%</span></div>
+                  <div style="font-size:12px;color:var(--text-muted)">被动：<span style="color:#ffd700;font-weight:700" id="gauge-passive-rate">1.3%</span></div>
+                  <div style="font-size:12px;color:var(--text-muted)">综合：<span style="color:#a55eea;font-weight:700" id="gauge-total-rate">3.0%</span></div>
+                </div>
+              </div>
+              <!-- 同期对比 -->
+              <div style="padding:8px 10px;background:var(--card-bg);border-radius:6px;border:1px solid var(--border)">
+                <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;font-weight:600">📊 同期对比</div>
+                <div style="display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--text-muted)">
+                  <div style="display:flex;justify-content:space-between"><span>BG去年</span><span style="color:var(--text)">2.5%</span></div>
+                  <div style="display:flex;justify-content:space-between"><span>·主动</span><span style="color:var(--accent-red)">1.3%</span></div>
+                  <div style="display:flex;justify-content:space-between"><span>·被动</span><span style="color:#ffd700">1.3%</span></div>
+                  <div style="margin-top:4px;padding-top:4px;border-top:1px solid var(--border);display:flex;justify-content:space-between"><span>集团今年</span><span style="color:var(--text)">3.2%</span></div>
+                  <div style="display:flex;justify-content:space-between"><span>·主动</span><span style="color:var(--accent-red)">1.6%</span></div>
+                  <div style="display:flex;justify-content:space-between"><span>·被动</span><span style="color:#ffd700">1.6%</span></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -3964,10 +3975,15 @@ function renderAnomalyTable() {
            }
          </div>`
       : `<span style="color:var(--text-muted);">-</span>`;
+    // 特殊处理"月度净增"行：不显示note列，扩展数据条列宽度
+    const isNetChange = row.type === '月度净增';
+    const tdWidth = isNetChange ? 'width:80%' : 'width:60%';
+    const noteCell = isNetChange ? '' : `<td class="editable-cell" style="color:var(--text-muted);font-size:12px">${row.note}</td>`;
+    
     tr.innerHTML = `
       <td style="color:var(--text-secondary);white-space:nowrap">${row.type}</td>
-      <td class="editable-cell" style="width:60%">${barHtml}</td>
-      <td class="editable-cell" style="color:var(--text-muted);font-size:12px">${row.note}</td>`;
+      <td class="editable-cell" style="${tdWidth}">${barHtml}</td>
+      ${noteCell}`;
     const cells = tr.querySelectorAll('.editable-cell');
     makeEditable(cells[0], v => {
       const normalized = String(v).replace(/,/g, '');
@@ -3975,7 +3991,9 @@ function renderAnomalyTable() {
       syncAnomalyKPI();
       renderAnomalyTable(); // 重新渲染以更新数据条
     });
-    makeEditable(cells[1], v => { DB.anomaly[idx].note = v; });
+    if (!isNetChange && cells[1]) {
+      makeEditable(cells[1], v => { DB.anomaly[idx].note = v; });
+    }
     tbody.appendChild(tr);
   });
   syncAnomalyKPI();
