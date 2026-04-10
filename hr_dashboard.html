@@ -1111,12 +1111,11 @@ body {
           <div class="card-title"><span class="title-icon">📉 离职率指标</span></div>
           <div style="display:flex;gap:12px;align-items:center">
             <!-- 左侧：仪表图+本期指标（垂直居中） -->
-            <div style="flex:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-width:140px">
-              <div id="gauge-complete" style="height:140px;width:100%"></div>
+            <div style="flex:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:140px">
+              <div id="gauge-complete" style="height:160px;width:100%"></div>
               <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center">
                 <div style="font-size:12px;color:var(--text-muted)">主动：<span style="color:#ff4757;font-weight:700" id="gauge-active-rate">1.7%</span></div>
                 <div style="font-size:12px;color:var(--text-muted)">被动：<span style="color:#ffd700;font-weight:700" id="gauge-passive-rate">1.3%</span></div>
-                <div style="font-size:12px;color:var(--text-muted)">综合：<span style="color:#a55eea;font-weight:700" id="gauge-total-rate">3.0%</span></div>
               </div>
             </div>
             <!-- 右侧：同期对比 -->
@@ -1541,7 +1540,7 @@ const DB = {
     {type:'被动离职', count:14, pct:'0.7%', note:'正编口径'},
     {type:'跨BG调入', count:3, pct:'0.15%', note:''},
     {type:'跨BG调出', count:10, pct:'0.5%', note:''},
-    {type:'月度净增', count:-7, pct:'-', note:'正编净变化'},
+    {type:'月度净增', count:-7, pct:'-', note:'正编+外包净变化'},
   ],
   products: [
     {group:'AI营销业务群',line:'AI营销',approved:20,done:17,paused:0,p4:0,p4done:0},
