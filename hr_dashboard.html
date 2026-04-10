@@ -1109,7 +1109,7 @@ body {
         </div>
         <div class="card">
           <div class="card-title"><span class="title-icon">📉 离职率指标</span></div>
-          <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="display:flex;gap:12px;align-items:center">
             <!-- 左侧：仪表图 -->
             <div style="flex:1.2;min-width:140px">
               <div id="gauge-complete" style="height:140px"></div>
@@ -3975,15 +3975,10 @@ function renderAnomalyTable() {
            }
          </div>`
       : `<span style="color:var(--text-muted);">-</span>`;
-    // 特殊处理"月度净增"行：不显示note列，扩展数据条列宽度
-    const isNetChange = row.type === '月度净增';
-    const tdWidth = isNetChange ? 'width:80%' : 'width:60%';
-    const noteCell = isNetChange ? '' : `<td class="editable-cell" style="color:var(--text-muted);font-size:12px">${row.note}</td>`;
-    
     tr.innerHTML = `
       <td style="color:var(--text-secondary);white-space:nowrap">${row.type}</td>
-      <td class="editable-cell" style="${tdWidth}">${barHtml}</td>
-      ${noteCell}`;
+      <td class="editable-cell" style="width:60%">${barHtml}</td>
+      <td class="editable-cell" style="color:var(--text-muted);font-size:12px">${row.note}</td>`;
     const cells = tr.querySelectorAll('.editable-cell');
     makeEditable(cells[0], v => {
       const normalized = String(v).replace(/,/g, '');
@@ -3991,9 +3986,7 @@ function renderAnomalyTable() {
       syncAnomalyKPI();
       renderAnomalyTable(); // 重新渲染以更新数据条
     });
-    if (!isNetChange && cells[1]) {
-      makeEditable(cells[1], v => { DB.anomaly[idx].note = v; });
-    }
+    makeEditable(cells[1], v => { DB.anomaly[idx].note = v; });
     tbody.appendChild(tr);
   });
   syncAnomalyKPI();
