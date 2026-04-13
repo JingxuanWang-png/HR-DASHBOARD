@@ -14,7 +14,7 @@ interface DashboardData {
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
   const [data, setData] = useState<DashboardData>({})
-  const [month, setMonth] = useState('2026-04')
+  const [month, setMonth] = useState('2026-03')
   const [loading, setLoading] = useState(true)
   const [importFile, setImportFile] = useState<File | null>(null)
   const [importing, setImporting] = useState(false)
