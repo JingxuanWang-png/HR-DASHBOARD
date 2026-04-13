@@ -1,0 +1,76 @@
+# HR 驾驶舱数据导入模板
+
+## 使用说明
+
+1. 填写下方各工作表的数据
+2. 月份格式：2025-03（年-月）
+3. 保存为 .xlsx 格式后上传
+
+---
+
+## 工作表说明
+
+### 1. KPI数据 (kpi_data)
+| 字段 | 说明 | 示例 |
+|------|------|------|
+| month | 月份 | 2025-03 |
+| bg_name | 业务群 | CBG |
+| total_headcount | 总人数 | 1544 |
+| regular_staff | 正编人数 | 1272 |
+| outsourced_staff | 外包人数 | 272 |
+| total_quota | 总编制 | 1755 |
+| regular_quota | 正编编制 | 1397 |
+| outsourced_quota | 外包编制 | 358 |
+| vacancy_regular | 正编空编 | 125 |
+| vacancy_outsourced | 外包空编 | 86 |
+| new_hires | 本月入职 | 24 |
+| resignations | 本月离职 | 31 |
+| attrition_rate | 离职率(%) | 3.0 |
+| active_attrition | 主动离职率(%) | 1.7 |
+| passive_attrition | 被动离职率(%) | 1.3 |
+
+### 2. 招聘数据 (recruit_data)
+| 字段 | 说明 | 示例 |
+|------|------|------|
+| month | 月份 | 2025-03 |
+| bg_name | 业务群 | CBG |
+| total_demand | 总需求 | 155 |
+| completed | 已完成 | 120 |
+| completion_rate | 完成率(%) | 77.4 |
+| hired_this_month | 本月入职 | 24 |
+| offered | 已发offer | 45 |
+| pending_offer | 待发offer | 12 |
+| interviewed | 已面试 | 89 |
+| overseas_demand | 出海需求 | 44 |
+| overseas_completed | 出海完成 | 34 |
+| overseas_rate | 出海完成率(%) | 77.3 |
+| a_class_demand | A类需求 | 13 |
+| a_class_completed | A类完成 | 9 |
+| a_class_rate | A类完成率(%) | 69.2 |
+
+### 3. 异动数据 (anomaly_data)
+| 字段 | 说明 | 示例 |
+|------|------|------|
+| month | 月份 | 2025-03 |
+| bg_name | 业务群 | CBG |
+| type | 类型 | 入职/离职/主动离职/被动离职/月度净增 |
+| count | 人数 | 24 |
+| note | 备注 | 正编+外包净变化 |
+| sort_order | 排序 | 1 |
+
+### 4. 产线数据 (product_data)
+| 字段 | 说明 | 示例 |
+|------|------|------|
+| month | 月份 | 2025-03 |
+| product_line | 产线名称 | TV产品线 |
+| headcount | 在职人数 | 662 |
+| demand | 需求 | 762 |
+| vacancy | 空编 | 100 |
+| attrition_rate | 离职率(%) | 2.8 |
+| bg_name | 业务群 | CBG |
+
+---
+
+## 导入示例
+
+见模板文件中的各个工作表。
