@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'YOUR_SUPABASE_URL'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY'
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'YOUR_SUPABASE_SERVICE_ROLE_KEY'
+// Supabase 配置
+const supabaseUrl = 'https://ccdgebymatqddpsvhpny.supabase.co'
+const supabaseAnonKey = 'sb_publishable_9O0vOLRwrFxY5zMhyevvLA_kRgi8BYX'
+const supabaseServiceKey = 'sb_secret_F-Sh8q4I7gEsvQVkd-OJPA_XJFndKTp'
 
 // 客户端（前端用）
 export const supabaseClient = createClient(supabaseUrl, supabaseAnonKey)
