@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CBG 人力驾驶舱 - Supabase</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <style>
+    body { background: #0f172a; color: white; }
+    .card { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255,255,255,0.1); }
+  </style>
+</head>
+<body class="min-h-screen p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold">CBG 人力驾驶舱</h1>
+        <p class="text-gray-400 text-sm mt-1" id="user-info">加载中...</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <select id="month-select" class="px-4 py-2 bg-gray-800 text-white rounded border border-gray-600">
+          <option value="2026-03">2026-03</option>
+        </select>
+        <button id="logout-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">退出</button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="text-center py-20 text-gray-400">加载中...</div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard" class="hidden">
+      <!-- KPI Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6" id="kpi-cards">
+      </div>
+
+      <!-- Anomaly Table -->
+      <div class="card rounded-lg p-4 mb-6">
+        <h3 class="text-lg font-semibold mb-4">📋 当月人力异动明细</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-gray-400 border-b border-gray-700">
+                <th class="text-left py-2">类型</th>
+                <th class="text-right py-2">人数</th>
+                <th class="text-left py-2 pl-4">备注</th>
+              </tr>
+            </thead>
+            <tbody id="anomaly-body">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Product Data -->
+      <div class="card rounded-lg p-4">
+        <h3 class="text-lg font-semibold mb-4">🏭 产线数据</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-gray-400 border-b border-gray-700">
+                <th class="text-left py-2">产线</th>
+                <th class="text-right py-2">在职</th>
+                <th class="text-right py-2">需求</th>
+                <th class="text-right py-2">空编</th>
+                <th class="text-right py-2">离职率</th>
+              </tr>
+            </thead>
+            <tbody id="product-body">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Supabase 配置
+    const SUPABASE_URL = 'https://ccdgebymatqddpsvhpny.supabase.co'
+    const SUPABASE_ANON_KEY = 'sb_publishable_9O0vOLRwrFxY5zMhyevvLA_kRgi8BYX'
+    
+    // 初始化 Supabase 客户端
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    
+    // Edge Functions 地址
+    const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1`
+    
+    let currentMonth = '2026-03'
+    let currentUser = null
+
+    // 检查登录状态
+    async function checkAuth() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        window.location.href = '/login.html'
+        return
+      }
+      currentUser = user
+      document.getElementById('user-info').textContent = user.email
+      loadData()
+    }
+
+    // 加载数据（使用 Edge Function）
+    async function loadData() {
+      document.getElementById('loading').classList.remove('hidden')
+      document.getElementById('dashboard').classList.add('hidden')
+      
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        const response = await fetch(
+          `${EDGE_FUNCTION_URL}/data?month=${currentMonth}&bg_name=CBG&type=all`,
+          {
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+              'apikey': SUPABASE_ANON_KEY
+            }
+          }
+        )
+        
+        const result = await response.json()
+        
+        if (result.success) {
+          renderDashboard(result.data)
+        } else {
+          console.error('加载失败:', result.error)
+        }
+      } catch (e) {
+        console.error('请求失败:', e)
+        // 降级：直接查询数据库
+        await loadDataDirect()
+      }
+      
+      document.getElementById('loading').classList.add('hidden')
+      document.getElementById('dashboard').classList.remove('hidden')
+    }
+
+    // 直接查询数据库（降级方案）
+    async function loadDataDirect() {
+      const { data: kpi } = await supabase
+        .from('kpi_data')
+        .select('*')
+        .eq('month', currentMonth)
+        .eq('bg_name', 'CBG')
+        .single()
+      
+      const { data: anomaly } = await supabase
+        .from('anomaly_data')
+        .select('*')
+        .eq('month', currentMonth)
+        .eq('bg_name', 'CBG')
+        .order('sort_order')
+      
+      const { data: product } = await supabase
+        .from('product_data')
+        .select('*')
+        .eq('month', currentMonth)
+        .eq('bg_name', 'CBG')
+      
+      renderDashboard({ kpi: kpi || {}, anomaly: anomaly || [], product: product || [] })
+    }
+
+    // 渲染仪表盘
+    function renderDashboard(data) {
+      // KPI Cards
+      const kpiCards = document.getElementById('kpi-cards')
+      const kpiData = data.kpi || {}
+      kpiCards.innerHTML = `
+        ${renderKpiCard('总人数', kpiData.total_headcount || 0)}
+        ${renderKpiCard('正编人数', kpiData.regular_staff || 0)}
+        ${renderKpiCard('外包人数', kpiData.outsourced_staff || 0)}
+        ${renderKpiCard('总编制', kpiData.total_quota || 0)}
+        ${renderKpiCard('本月入职', kpiData.new_hires || 0, 'green')}
+        ${renderKpiCard('本月离职', kpiData.resignations || 0, 'red')}
+      `
+      
+      // Anomaly Table
+      const anomalyBody = document.getElementById('anomaly-body')
+      anomalyBody.innerHTML = (data.anomaly || []).map(item => `
+        <tr class="border-b border-gray-700/50">
+          <td class="py-2 text-gray-300">${item.type}</td>
+          <td class="py-2 text-right">
+            <span class="${item.count >= 0 ? 'text-green-400' : 'text-red-400'}">
+              ${item.count > 0 ? '+' : ''}${item.count}
+            </span>
+          </td>
+          <td class="py-2 pl-4 text-gray-500 text-xs">${item.note || '-'}</td>
+        </tr>
+      `).join('')
+      
+      // Product Table
+      const productBody = document.getElementById('product-body')
+      productBody.innerHTML = (data.product || []).map(item => `
+        <tr class="border-b border-gray-700/50">
+          <td class="py-2 text-gray-300">${item.product_line}</td>
+          <td class="py-2 text-right">${item.headcount}</td>
+          <td class="py-2 text-right">${item.demand}</td>
+          <td class="py-2 text-right text-yellow-400">${item.vacancy}</td>
+          <td class="py-2 text-right">${item.attrition_rate}%</td>
+        </tr>
+      `).join('')
+    }
+
+    function renderKpiCard(title, value, color = 'blue') {
+      const colors = {
+        blue: 'from-blue-600 to-blue-800',
+        green: 'from-green-600 to-green-800',
+        red: 'from-red-600 to-red-800'
+      }
+      return `
+        <div class="bg-gradient-to-br ${colors[color]} rounded-lg p-4 text-white">
+          <div class="text-sm opacity-80">${title}</div>
+          <div class="text-2xl font-bold mt-1">${value.toLocaleString()}</div>
+        </div>
+      `
+    }
+
+    // 事件监听
+    document.getElementById('month-select').addEventListener('change', (e) => {
+      currentMonth = e.target.value
+      loadData()
+    })
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabase.auth.signOut()
+      window.location.href = '/login.html'
+    })
+
+    // 初始化
+    checkAuth()
+  </script>
+</body>
+</html>
